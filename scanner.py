@@ -16,15 +16,15 @@ fileWriter = open(FILE_RESULTS, "w")
 codesDetected = set()
 while True:
 	frameData = vs.read()
-	frameData = imutils.resize(frameData, width=600)
-	barcodes = pyzbar.decode(frameData)
+	image = imutils.resize(frameData, width=600)
+	barcodes = pyzbar.decode(image)
 	for barcode in barcodes:
-		(x, y, width, height) = barcode.rect
-		cv2.rectangle(frameData, (x, y), (x + width, y + height), (0, 0, 255), 2)
+		(x, y, w, h) = barcode.rect
+		cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
 		barcodeData = barcode.data.decode("utf-8")
 		barcodeType = barcode.type	
-		cv2.putText(frameData, barcodeData, (x, y - 10),
-			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+		cv2.putText(image, barcodeData, (x, y - 10),
+			cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 		if barcodeData not in codesDetected:
 			textData = "{}\t{}\t{}".format(datetime.now().isoformat(), barcodeType, barcodeData)
 			fileWriter.write(textData + "\n")
@@ -32,7 +32,7 @@ while True:
 			print(textData)
 			codesDetected.add(barcodeData)
 			winsound.Beep(WINSOUND_FREQUENCY, WINSOUND_DURATION)
-	cv2.imshow("Barcode Scanner", frameData)
+	cv2.imshow("Barcode Scanner", image)
 	key = cv2.waitKey(1) & 0xFF
 	if key == ord("x"):
 		break
